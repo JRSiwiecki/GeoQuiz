@@ -5,6 +5,7 @@
     <string name="correct_toast">Correct!</string>
     <string name="incorrect_toast">Incorrect!</string>
     <string name="next_button">Next</string>
+    <string name="previous_button">Previous</string>
 
     <string name="question_mongolia">Mongolia is a land-locked country.</string>
     <string name="question_bermuda_triangle">The Bermuda Triangle is in the Pacific Ocean.</string>

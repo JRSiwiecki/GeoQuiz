@@ -10,6 +10,11 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private enum class QuestionDirection {
+        PREVIOUS,
+        NEXT
+    }
+
     private val questionBank = listOf(
         Question(R.string.question_mongolia, true),
         Question(R.string.question_brazil, true),
@@ -26,6 +31,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.questionTextView.setOnClickListener { view: View ->
+            updateQuestionIndexAndQuestion(QuestionDirection.NEXT)
+        }
+
         binding.trueButton.setOnClickListener { view: View ->
 
             checkAnswer(true, view)
@@ -38,14 +47,27 @@ class MainActivity : AppCompatActivity() {
 
         binding.nextButton.setOnClickListener { view: View ->
 
-            currentQuestionIndex = (currentQuestionIndex + 1) % questionBank.size
-            updateQuestion()
+            updateQuestionIndexAndQuestion(QuestionDirection.NEXT)
 
+        }
+
+        binding.previousButton.setOnClickListener { view: View ->
+            updateQuestionIndexAndQuestion(QuestionDirection.PREVIOUS)
         }
 
         updateQuestion()
     }
 
+
+    private fun updateQuestionIndexAndQuestion(questionDirection: QuestionDirection) {
+        currentQuestionIndex = if (questionDirection == QuestionDirection.PREVIOUS) {
+            (currentQuestionIndex - 1 + questionBank.size) % questionBank.size
+        } else {
+            (currentQuestionIndex + 1) % questionBank.size
+        }
+
+        updateQuestion()
+    }
     private fun updateQuestion() {
         val questionTextResId = questionBank[currentQuestionIndex].textResId
         binding.questionTextView.setText(questionTextResId)
