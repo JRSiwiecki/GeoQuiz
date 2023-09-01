@@ -1,8 +1,14 @@
 <resources>
     <string name="app_name">GeoQuiz</string>
-    <string name="question_text">Mongolia is a land-locked country.</string>
     <string name="true_button">True</string>
     <string name="false_button">False</string>
-    <string name="correct_toast">Correct! Mongolia is in fact a land-locked country.</string>
-    <string name="incorrect_toast">Incorrect! Mongolia is in fact a land-locked country.</string>
+    <string name="correct_toast">Correct!</string>
+    <string name="incorrect_toast">Incorrect!</string>
+    <string name="next_button">Next</string>
+
+    <string name="question_mongolia">Mongolia is a land-locked country.</string>
+    <string name="question_bermuda_triangle">The Bermuda Triangle is in the Pacific Ocean.</string>
+    <string name="question_mount_rushmore">Mount Rushmore is located in South Dakota.</string>
+    <string name="question_largest_island">Iceland is the world\'s largest island.</string>
+    <string name="question_brazil">Brazil is the largest country in South America.</string>
 </resources>
