@@ -2,10 +2,13 @@ package com.bignerdranch.android.geoquiz
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import com.bignerdranch.android.geoquiz.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 
+
+private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -27,6 +30,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.d(TAG, "onCreate(Bundle?) called")
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -56,6 +61,31 @@ class MainActivity : AppCompatActivity() {
         }
 
         updateQuestion()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart(Bundle?) called")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume(Bundle?) called")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause(Bundle?) called")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop(Bundle?) called")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy(Bundle?) called")
     }
 
 
