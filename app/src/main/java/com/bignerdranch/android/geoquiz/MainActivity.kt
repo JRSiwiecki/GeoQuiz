@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     )
 
     private var currentQuestionIndex = 0
+    private var numberOfQuestionsAnswered = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,23 +110,23 @@ class MainActivity : AppCompatActivity() {
         val currentQuestion = getCurrentQuestion()
 
         if (currentQuestion.answerState == UserAnswerState.ANSWERED) {
-            disableButtons()
+            disableAnswerButtons()
         } else {
-            enableButtons()
+            enableAnswerButtons()
         }
     }
     private fun getCurrentQuestion(): Question {
         return questionBank[currentQuestionIndex]
     }
 
-    private fun disableButtons() {
+    private fun disableAnswerButtons() {
         binding.trueButton.isEnabled = false
         binding.trueButton.isClickable = false
         binding.falseButton.isEnabled = false
         binding.falseButton.isClickable = false
     }
 
-    private fun enableButtons() {
+    private fun enableAnswerButtons() {
         binding.trueButton.isEnabled = true
         binding.trueButton.isClickable = true
         binding.falseButton.isEnabled = true
@@ -150,7 +151,35 @@ class MainActivity : AppCompatActivity() {
         Snackbar.make(
             view,
             messageResId,
-            3000
+            Snackbar.LENGTH_SHORT
         ).show()
+
+        numberOfQuestionsAnswered += 1
+
+        if (numberOfQuestionsAnswered == questionBank.size) {
+            val userScore = calculateScore()
+
+            Snackbar.make(
+                view,
+                "Congrats! Your score is $userScore%",
+                Snackbar.LENGTH_INDEFINITE
+            ).show()
+
+        }
+    }
+
+    private fun calculateScore(): Double {
+        var userQuizScore = 0.0
+
+        for (question in questionBank) {
+            val userAnswer = question.userAnswer
+            val questionAnswer = question.correctAnswer
+
+            if (userAnswer == questionAnswer) {
+                userQuizScore += 1.0
+            }
+        }
+
+        return (userQuizScore / questionBank.size) * 100.0
     }
 }
