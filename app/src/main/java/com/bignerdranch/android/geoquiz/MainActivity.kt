@@ -19,11 +19,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val questionBank = listOf(
-        Question(R.string.question_mongolia, true),
-        Question(R.string.question_brazil, true),
-        Question(R.string.question_bermuda_triangle, false),
-        Question(R.string.question_largest_island, false),
-        Question(R.string.question_mount_rushmore, true)
+        Question(R.string.question_mongolia, correctAnswer = true, userAnswer = false, answerState = UserAnswerState.UNANSWERED),
+        Question(R.string.question_brazil, correctAnswer = true, userAnswer = false, answerState = UserAnswerState.UNANSWERED),
+        Question(R.string.question_bermuda_triangle, correctAnswer = false, userAnswer = false, answerState = UserAnswerState.UNANSWERED),
+        Question(R.string.question_largest_island, correctAnswer = false, userAnswer = false, answerState = UserAnswerState.UNANSWERED),
+        Question(R.string.question_mount_rushmore, correctAnswer = true, userAnswer = false, answerState = UserAnswerState.UNANSWERED)
     )
 
     private var currentQuestionIndex = 0
@@ -101,16 +101,51 @@ class MainActivity : AppCompatActivity() {
     private fun updateQuestion() {
         val questionTextResId = questionBank[currentQuestionIndex].textResId
         binding.questionTextView.setText(questionTextResId)
+
+        updateButtons()
+    }
+
+    private fun updateButtons() {
+        val currentQuestion = getCurrentQuestion()
+
+        if (currentQuestion.answerState == UserAnswerState.ANSWERED) {
+            disableButtons()
+        } else {
+            enableButtons()
+        }
+    }
+    private fun getCurrentQuestion(): Question {
+        return questionBank[currentQuestionIndex]
+    }
+
+    private fun disableButtons() {
+        binding.trueButton.isEnabled = false
+        binding.trueButton.isClickable = false
+        binding.falseButton.isEnabled = false
+        binding.falseButton.isClickable = false
+    }
+
+    private fun enableButtons() {
+        binding.trueButton.isEnabled = true
+        binding.trueButton.isClickable = true
+        binding.falseButton.isEnabled = true
+        binding.falseButton.isClickable = true
     }
 
     private fun checkAnswer(userAnswer: Boolean, view: View) {
-        val correctAnswer = questionBank[currentQuestionIndex].answer
+        val currentQuestion = getCurrentQuestion()
+
+        val correctAnswer = questionBank[currentQuestionIndex].correctAnswer
 
         val messageResId = if (userAnswer == correctAnswer) {
             R.string.correct_toast
         } else {
             R.string.incorrect_toast
         }
+
+        currentQuestion.userAnswer = userAnswer
+        currentQuestion.answerState = UserAnswerState.ANSWERED
+        updateButtons()
 
         Snackbar.make(
             view,
