@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import com.bignerdranch.android.geoquiz.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -13,21 +14,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private enum class QuestionDirection {
+    private val quizViewModel : QuizViewModel by viewModels()
+
+    enum class QuestionDirection {
         PREVIOUS,
         NEXT
     }
-
-    private val questionBank = listOf(
-        Question(R.string.question_mongolia, correctAnswer = true, userAnswer = false, answerState = UserAnswerState.UNANSWERED),
-        Question(R.string.question_brazil, correctAnswer = true, userAnswer = false, answerState = UserAnswerState.UNANSWERED),
-        Question(R.string.question_bermuda_triangle, correctAnswer = false, userAnswer = false, answerState = UserAnswerState.UNANSWERED),
-        Question(R.string.question_largest_island, correctAnswer = false, userAnswer = false, answerState = UserAnswerState.UNANSWERED),
-        Question(R.string.question_mount_rushmore, correctAnswer = true, userAnswer = false, answerState = UserAnswerState.UNANSWERED)
-    )
-
-    private var currentQuestionIndex = 0
-    private var numberOfQuestionsAnswered = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +28,8 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        Log.d(TAG, "Got a QuizViewModel: $quizViewModel")
 
         binding.questionTextView.setOnClickListener { view: View ->
             updateQuestionIndexAndQuestion(QuestionDirection.NEXT)
@@ -91,16 +85,12 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun updateQuestionIndexAndQuestion(questionDirection: QuestionDirection) {
-        currentQuestionIndex = if (questionDirection == QuestionDirection.PREVIOUS) {
-            (currentQuestionIndex - 1 + questionBank.size) % questionBank.size
-        } else {
-            (currentQuestionIndex + 1) % questionBank.size
-        }
 
+        quizViewModel.moveToNext(questionDirection)
         updateQuestion()
     }
     private fun updateQuestion() {
-        val questionTextResId = questionBank[currentQuestionIndex].textResId
+        val questionTextResId = quizViewModel.currentQuestion.textResId
         binding.questionTextView.setText(questionTextResId)
 
         updateButtons()
@@ -116,7 +106,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun getCurrentQuestion(): Question {
-        return questionBank[currentQuestionIndex]
+        return quizViewModel.currentQuestion
     }
 
     private fun disableAnswerButtons() {
@@ -136,7 +126,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkAnswer(userAnswer: Boolean, view: View) {
         val currentQuestion = getCurrentQuestion()
 
-        val correctAnswer = questionBank[currentQuestionIndex].correctAnswer
+        val correctAnswer = quizViewModel.currentQuestion.correctAnswer
 
         val messageResId = if (userAnswer == correctAnswer) {
             R.string.correct_toast
@@ -154,9 +144,9 @@ class MainActivity : AppCompatActivity() {
             Snackbar.LENGTH_SHORT
         ).show()
 
-        numberOfQuestionsAnswered += 1
+        quizViewModel.incrementNumberOfQuestionsAnswered()
 
-        if (numberOfQuestionsAnswered == questionBank.size) {
+        if (quizViewModel.totalNumberOfQuestionsAnswered == quizViewModel.totalNumberOfQuestions) {
             val userScore = calculateScore()
 
             Snackbar.make(
@@ -171,7 +161,7 @@ class MainActivity : AppCompatActivity() {
     private fun calculateScore(): Double {
         var userQuizScore = 0.0
 
-        for (question in questionBank) {
+        for (question in quizViewModel.questionBankCopy) {
             val userAnswer = question.userAnswer
             val questionAnswer = question.correctAnswer
 
@@ -180,6 +170,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        return (userQuizScore / questionBank.size) * 100.0
+        return (userQuizScore / quizViewModel.totalNumberOfQuestions) * 100.0
     }
 }
