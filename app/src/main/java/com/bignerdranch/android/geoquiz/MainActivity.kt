@@ -1,9 +1,11 @@
 package com.bignerdranch.android.geoquiz
 
+import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.bignerdranch.android.geoquiz.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
@@ -19,6 +21,16 @@ class MainActivity : AppCompatActivity() {
     enum class QuestionDirection {
         PREVIOUS,
         NEXT
+    }
+
+    private val cheatLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+
+        if (result.resultCode == Activity.RESULT_OK) {
+            quizViewModel.isCheater =
+                result.data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,14 +57,22 @@ class MainActivity : AppCompatActivity() {
             checkAnswer(false, view)
         }
 
+        binding.previousButton.setOnClickListener { view: View ->
+            updateQuestionIndexAndQuestion(QuestionDirection.PREVIOUS)
+        }
+
         binding.nextButton.setOnClickListener { view: View ->
 
             updateQuestionIndexAndQuestion(QuestionDirection.NEXT)
 
         }
 
-        binding.previousButton.setOnClickListener { view: View ->
-            updateQuestionIndexAndQuestion(QuestionDirection.PREVIOUS)
+        binding.cheatButton.setOnClickListener { view: View ->
+
+            val answerIsTrue = quizViewModel.currentQuestion.correctAnswer
+            val cheatIntent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
+            cheatLauncher.launch(cheatIntent)
+
         }
 
         updateQuestion()
@@ -128,13 +148,18 @@ class MainActivity : AppCompatActivity() {
 
         val correctAnswer = quizViewModel.currentQuestion.correctAnswer
 
-        val messageResId = if (userAnswer == correctAnswer) {
-            R.string.correct_toast
-        } else {
-            R.string.incorrect_toast
+        val messageResId = when {
+            quizViewModel.isCheater -> R.string.judgement_toast
+            userAnswer == correctAnswer -> R.string.correct_toast
+            else -> R.string.incorrect_toast
         }
 
-        currentQuestion.userAnswer = userAnswer
+        // Set user answer to opposite of correct answer when they cheat!
+        currentQuestion.userAnswer = when {
+            quizViewModel.isCheater -> !(currentQuestion.correctAnswer)
+            else -> userAnswer
+        }
+
         currentQuestion.answerState = UserAnswerState.ANSWERED
         updateButtons()
 
