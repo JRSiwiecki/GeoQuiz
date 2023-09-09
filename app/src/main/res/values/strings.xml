@@ -7,6 +7,11 @@
     <string name="next_button">Next</string>
     <string name="previous_button">Previous</string>
 
+    <string name="warning_text">Are you sure you want to cheat?</string>
+    <string name="show_answer_button">Show Answer</string>
+    <string name="cheat_button">Cheat!</string>
+    <string name="judgement_toast">Cheating is wrong.</string>
+
     <string name="question_mongolia">Mongolia is a land-locked country.</string>
     <string name="question_bermuda_triangle">The Bermuda Triangle is in the Pacific Ocean.</string>
     <string name="question_mount_rushmore">Mount Rushmore is located in South Dakota.</string>
