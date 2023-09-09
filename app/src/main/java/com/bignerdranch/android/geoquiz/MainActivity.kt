@@ -154,6 +154,7 @@ class MainActivity : AppCompatActivity() {
             else -> R.string.incorrect_toast
         }
 
+        currentQuestion.userAnswer = userAnswer
         currentQuestion.answerState = UserAnswerState.ANSWERED
         updateButtons()
 
