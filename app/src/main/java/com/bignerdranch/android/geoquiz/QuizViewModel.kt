@@ -1,7 +1,10 @@
 package com.bignerdranch.android.geoquiz
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-class QuizViewModel : ViewModel() {
+
+const val IS_CHEATER_KEY = "IS_CHEATER_KEY"
+class QuizViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
 
     private val questionBank = listOf(
         Question(R.string.question_mongolia, correctAnswer = true, userAnswer = false, answerState = UserAnswerState.UNANSWERED),
@@ -25,6 +28,10 @@ class QuizViewModel : ViewModel() {
 
     val questionBankCopy: List<Question>
         get() = questionBank
+
+    var isCheater: Boolean
+        get() = savedStateHandle.get(IS_CHEATER_KEY) ?: false
+        set(value) = savedStateHandle.set(IS_CHEATER_KEY, value)
 
     fun moveToNext(questionDirection: MainActivity.QuestionDirection) {
         currentQuestionIndex = if (questionDirection == MainActivity.QuestionDirection.PREVIOUS) {
