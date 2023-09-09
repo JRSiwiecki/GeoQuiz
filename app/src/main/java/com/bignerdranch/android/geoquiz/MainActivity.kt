@@ -154,12 +154,6 @@ class MainActivity : AppCompatActivity() {
             else -> R.string.incorrect_toast
         }
 
-        // Set user answer to opposite of correct answer when they cheat!
-        currentQuestion.userAnswer = when {
-            quizViewModel.isCheater -> !(currentQuestion.correctAnswer)
-            else -> userAnswer
-        }
-
         currentQuestion.answerState = UserAnswerState.ANSWERED
         updateButtons()
 
